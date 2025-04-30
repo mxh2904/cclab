@@ -21,6 +21,7 @@ let breathSpeed = 0.5;
 let maxSize = 256;
 let minSize = 206;
 let ss = 1;
+let shakeX;
 
 function setup() {
     let canvas = createCanvas(800, 500);
@@ -52,14 +53,17 @@ function draw() {
 
   //吸引
   let distance = dist(mouseX, mouseY, posX, posY);
-  if (distance < 300) {
+  if (distance < 150 ) {
     // 平滑吸附
     posX = lerp(posX, mouseX, 0.1);
     posY = lerp(posY, mouseY, 0.1);
     
     // 近距离时改变大小
-    if (distance < 100) {
-      squareSize = lerp(squareSize, map(distance, 0, 100, minSize * 0.9, maxSize), 0.1);
+    if (distance < 30) {
+      squareSize = minSize + maxSize * abs(sin(frameCount*0.5));
+      //squareSize = lerp(squareSize, map(distance, 0, 100, minSize * 0.9, maxSize), 0.1);
+    }else{
+      squareSize = minSize;
     }
   } else if (abs(speedX) > 2 || abs(speedY) > 2) {
     speedX = random(-2, 2);
@@ -75,7 +79,9 @@ function draw() {
   }
 
   angle += 0.005;
-  ss = map(squareSize, minSize, maxSize, 0.85, 1);
+  ss = map(squareSize, minSize, minSize+maxSize, 1, 0.9);
+  //console.log(squareSize);
+  //ss = 0.2;
   rate = map(a, 0, 255, 0, 5);
   let shakeX = random(-rate, rate);
   let shakeY = random(-rate, rate);
@@ -91,17 +97,18 @@ function draw() {
   // 绘制黑色图形
   push();
   translate(posX + shakeX, posY + shakeY);
+ // translate(posX, posY);
   scale(ss);
   rotate(angle);
   fill(0);
   noStroke();
   beginShape();
-  vertex(184, 46);
-  vertex(77, 118);
-  vertex(86, 296);
-  vertex(232, 370);
-  vertex(320, 255);
-  vertex(318, 98);
+  vertex(184-posX, 46-posY);
+  vertex(77-posX, 118-posY);
+  vertex(86-posX, 296-posY);
+  vertex(232-posX, 370-posY);
+  vertex(320-posX, 255-posY);
+  vertex(318-posX, 98-posY);
   endShape(CLOSE);
   pop();
 
