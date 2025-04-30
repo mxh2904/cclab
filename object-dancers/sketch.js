@@ -46,11 +46,14 @@ class YourNameDancer {
     // your dancer's desired moves and behaviour
   }
   display() {
+
     // the push and pop, along with the translate 
     // places your whole dancer object at this.x and this.y.
     // you may change its position on line 19 to see the effect.
     push();
     translate(this.x, this.y);
+    fill(255,0,0);
+    circle(0,0, 100);
 
     // ******** //
     // ⬇️ draw your dancer from here ⬇️
