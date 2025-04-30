@@ -42,6 +42,7 @@ class YourNameDancer {
     //..
   }
   update() {
+    this.x = width*noise(frameCount*0.01);
     // update properties here to achieve
     // your dancer's desired moves and behaviour
   }
@@ -52,8 +53,17 @@ class YourNameDancer {
     // you may change its position on line 19 to see the effect.
     push();
     translate(this.x, this.y);
+    beginShape();
+    stroke(255);
+    noFill();
+    for(let i = 0; i<=130; i+=130/10){
+      let v = 10*sin(frameCount*0.1-i);
+      vertex(i, v);
+    }
+    endShape();
     fill(255,0,0);
     circle(0,0, 100);
+
 
     // ******** //
     // ⬇️ draw your dancer from here ⬇️
