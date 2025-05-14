@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Not an Apology - Interactive Story</title>
+  
+  <!-- 加载正确版本的p5.js库 -->
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.4.1/lib/p5.js"></script>
+  <!-- 加载p5.sound库 -->
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.4.1/lib/addons/p5.sound.min.js"></script>
+  
+  <!-- 自定义样式 -->
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #000;
+      font-family: Arial, sans-serif;
+    }
+    canvas {
+      display: block;
+    }
+    #loading {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 24px;
+      z-index: 100;
+    }
+    #error-message {
+      position: fixed;
+      top: 55%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: red;
+      font-size: 16px;
+      z-index: 100;
+      max-width: 80%;
+      text-align: center;
+    }
+    #debug-info {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 12px;
+      z-index: 100;
+      text-align: left;
+      pointer-events: none;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+    #controls {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      color: white;
+      font-size: 14px;
+      z-index: 100;
+      text-align: right;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">loading...</div>
+  <div id="error-message"></div>
+  <div id="debug-info"></div>
+  <div id="controls">
+    <div>click or press Enter to continue</div>
+  </div>
+  
+  <script>
+    // 辅助函数：显示调试信息
+    function showDebugInfo(message) {
+      const debugElement = document.getElementById('debug-info');
+      if (debugElement) {
+        const timestamp = new Date().toLocaleTimeString();
+        debugElement.innerHTML += `${timestamp}: ${message}<br>`;
+        // 限制显示的行数
+        const lines = debugElement.innerHTML.split('<br>');
+        if (lines.length > 10) {
+          debugElement.innerHTML = lines.slice(lines.length - 10).join('<br>');
+        }
+        console.log(`[DEBUG] ${message}`);
+        
+        // 自动滚动到底部
+        debugElement.scrollTop = debugElement.scrollHeight;
+      }
+    }
+    
+    // 监听全局错误
+    window.addEventListener('error', function(event) {
+      const errorMsg = `${event.message} (${event.filename}:${event.lineno})`;
+      document.getElementById('error-message').textContent = errorMsg;
+      showDebugInfo(`错误: ${errorMsg}`);
+    });
+    
+    // 设置p5.js实例模式的初始化函数
+    window.p5InitialSetup = function() {
+      showDebugInfo('p5.js准备初始化...');
+      try {
+        // 清除错误信息
+        document.getElementById('error-message').textContent = '';
+        // 隐藏加载提示
+        document.getElementById('loading').style.display = 'none';
+        showDebugInfo('p5.js初始化成功');
+      } catch (e) {
+        showDebugInfo(`初始化出错: ${e.message}`);
+      }
+    };
+    
+    // 页面加载完成后
+    window.addEventListener('load', function() {
+      showDebugInfo('页面已加载完成');
+      
+      // 监测p5是否加载成功
+      setTimeout(function() {
+        if (typeof p5 !== 'undefined') {
+          showDebugInfo('检测到p5.js库已加载');
+          
+          // 如果两秒后仍未隐藏加载提示，则尝试手动隐藏
+          setTimeout(function() {
+            if (document.getElementById('loading').style.display !== 'none') {
+              document.getElementById('loading').style.display = 'none';
+              showDebugInfo('手动隐藏加载提示');
+            }
+          }, 3000);
+        } else {
+          showDebugInfo('未检测到p5.js库');
+          document.getElementById('error-message').textContent = 'p5.js库未能成功加载，请检查网络连接或尝试刷新页面。';
+        }
+      }, 2000);
+    });
+    
+    // 显示调试状态切换
+    let debugVisible = true;
+    document.addEventListener('keydown', function(event) {
+      // 如果按下 D 键
+      if (event.key === 'd' || event.key === 'D') {
+        const debugElement = document.getElementById('debug-info');
+        const controlsElement = document.getElementById('controls');
+        
+        if (debugVisible) {
+          debugElement.style.display = 'none';
+          controlsElement.style.display = 'none';
+        } else {
+          debugElement.style.display = 'block';
+          controlsElement.style.display = 'block';
+        }
+        
+        debugVisible = !debugVisible;
+      }
+    });
+  </script>
+  
+  <!-- 加载sketch.js -->
+  <script src="sketch.js"></script>
+</body>
+</html>
